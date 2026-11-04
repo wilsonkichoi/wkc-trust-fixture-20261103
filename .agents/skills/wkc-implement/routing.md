@@ -80,8 +80,9 @@ a `headless_workers` key in `## Execution` is invalid.
 
 With no pair, every step uses `Coordinator model:`; go to section 4.
 
-**A build**, a follow-up build, and a pre-merge update use the first entry of the current pair.
-**`finish`, `verify`, and a planning call** use the first entry too, and never change the turn.
+**A build**, a follow-up build, and a pre-merge update use the first entry of the current pair: the
+ticket's own pair when its `## Execution` has one, the run's otherwise (section 2).
+**`finish`, `verify`, and a planning call** use that same first entry, and never change the turn.
 
 **A review** reads the preceding completed step on this pull request: the latest, by time posted, of
 the `wkc-implement: in review` handoff naming this pull request, each `wkc-implement: updated for
@@ -138,6 +139,7 @@ Routed worker: <wkc-implement | wkc-code-review | wkc-backlog>
 Invocation: <the skill's arguments, --run <ref> included>
 Ticket: <id>
 Pull request: <URL and head sha | none yet>
+Run PR: <URL and head sha, and for verify the links of its `wkc-yolo readiness:` records at that head | none yet>
 Checkout: <absolute path>
 Execution: <harness>, <model>, effort <effort>
 Work in the checkout above. Read the <skill> skill installed in that checkout's harness skill directory and run its steps yourself, once, for this invocation. Do not dispatch, and start no subagent, worker, AI test session, or other harness. Read the ticket, the documents it cites, the pull request, and earlier verdicts yourself. Write the Execution line above on your handoff, update, or verdict. Decide or park as the skill says; never ask. End with a short result: the state, the pull request and head sha, the verdict or finish result, the discovered tickets, and any open request.
