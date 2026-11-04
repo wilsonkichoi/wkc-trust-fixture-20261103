@@ -33,11 +33,11 @@ cmd_set() {
     while IFS= read -r line || [ -n "$line" ]; do
       case $line in
         "$key$TAB"*) ;;
-        *) printf '%s\n' "$line" >>"$tmp" ;;
+        *) printf '%s\n' "$line" >>"$tmp" || { rm -f "$tmp"; exit 1; } ;;
       esac
     done <"$KV_FILE"
   fi
-  printf '%s\t%s\n' "$key" "$value" >>"$tmp"
+  printf '%s\t%s\n' "$key" "$value" >>"$tmp" || { rm -f "$tmp"; exit 1; }
   mv "$tmp" "$KV_FILE" || { rm -f "$tmp"; exit 1; }
 }
 
