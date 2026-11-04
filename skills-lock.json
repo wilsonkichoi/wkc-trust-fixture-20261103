@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "skills": {
+    "wkc-architect": {
+      "source": "../cand",
+      "sourceType": "local",
+      "computedHash": "6be05b34c8ea826c0a71aa53b7ae39558d3224952fb5b12e9709b637683a3656"
+    },
+    "wkc-backlog": {
+      "source": "../cand",
+      "sourceType": "local",
+      "computedHash": "6928fbc719925ef65ab19936169e57b3e170c06de4c7b3f6c85c4a9f81c0e16c"
+    },
+    "wkc-code-review": {
+      "source": "../cand",
+      "sourceType": "local",
+      "computedHash": "6fe3fdb86f136eb1cf6ac577bf1d653239b8d044e5799d3701bb57ec1606f49d"
+    },
+    "wkc-implement": {
+      "source": "../cand",
+      "sourceType": "local",
+      "computedHash": "2c41a0af31ac3aced3d303513744c014b95283344697015a685fee2984a09618"
+    },
+    "wkc-plan": {
+      "source": "../cand",
+      "sourceType": "local",
+      "computedHash": "faa3cb1fd83b6b65ba88f2f1943684926c3a760731a197f688fc69914ed5ded3"
+    },
+    "wkc-tracker": {
+      "source": "../cand",
+      "sourceType": "local",
+      "computedHash": "13a7beb6acc6df735eeaba6472c953b3e52d8541fae02015251671fb3118a731"
+    },
+    "wkc-yolo": {
+      "source": "../cand",
+      "sourceType": "local",
+      "computedHash": "9b515c10ca7e2d05fec0892a8f06f0744c6f7226a972dec08c6ec9ec8ca4b333"
+    }
+  }
+}
