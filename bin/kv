@@ -9,8 +9,59 @@ usage() {
   echo "run 'kv help' for the commands" >&2
 }
 
+TAB=$(printf '\t')
+NL='
+'
+
+valid_key() {
+  case $1 in
+    '' | *[!A-Za-z0-9_.-]*) return 1 ;;
+  esac
+  [ ${#1} -le 64 ]
+}
+
+cmd_set() {
+  [ $# -eq 2 ] || { usage; exit 2; }
+  key=$1
+  value=$2
+  valid_key "$key" || { echo "kv: bad key" >&2; exit 2; }
+  case $value in
+    *"$TAB"* | *"$NL"*) echo "kv: bad value" >&2; exit 2 ;;
+  esac
+  tmp=$(mktemp "$KV_FILE.XXXXXX") || exit 1
+  if [ -f "$KV_FILE" ]; then
+    while IFS= read -r line || [ -n "$line" ]; do
+      case $line in
+        "$key$TAB"*) ;;
+        *) printf '%s\n' "$line" >>"$tmp" || { rm -f "$tmp"; exit 1; } ;;
+      esac
+    done <"$KV_FILE"
+  fi
+  printf '%s\t%s\n' "$key" "$value" >>"$tmp" || { rm -f "$tmp"; exit 1; }
+  mv "$tmp" "$KV_FILE" || { rm -f "$tmp"; exit 1; }
+}
+
 cmd_help() {
+  echo "set     store a value under a key"
+  echo "get     print the value of a key"
   echo "help    show this list"
+}
+
+cmd_get() {
+  [ $# -eq 1 ] || { usage; exit 2; }
+  case $1 in
+    '' | *[!A-Za-z0-9_.-]*) exit 2 ;;
+  esac
+  [ ${#1} -le 64 ] || exit 2
+  [ -f "$KV_FILE" ] || exit 1
+  tab=$(printf '\t')
+  while IFS=$tab read -r k v; do
+    if [ "$k" = "$1" ]; then
+      printf '%s\n' "$v"
+      exit 0
+    fi
+  done < "$KV_FILE"
+  exit 1
 }
 
 main() {
@@ -18,7 +69,9 @@ main() {
   cmd=$1
   shift
   case $cmd in
+    set) cmd_set "$@" ;;
     help) cmd_help "$@" ;;
+    get) cmd_get "$@" ;;
     *) usage; exit 2 ;;
   esac
 }
