@@ -11,6 +11,24 @@ usage() {
 
 cmd_help() {
   echo "help    show this list"
+  echo "get     print the value of a key"
+}
+
+cmd_get() {
+  [ $# -eq 1 ] || { usage; exit 2; }
+  case $1 in
+    '' | *[!A-Za-z0-9_.-]*) exit 2 ;;
+  esac
+  [ ${#1} -le 64 ] || exit 2
+  [ -f "$KV_FILE" ] || exit 1
+  tab=$(printf '\t')
+  while IFS=$tab read -r k v; do
+    if [ "$k" = "$1" ]; then
+      printf '%s\n' "$v"
+      exit 0
+    fi
+  done < "$KV_FILE"
+  exit 1
 }
 
 main() {
@@ -19,6 +37,7 @@ main() {
   shift
   case $cmd in
     help) cmd_help "$@" ;;
+    get) cmd_get "$@" ;;
     *) usage; exit 2 ;;
   esac
 }
