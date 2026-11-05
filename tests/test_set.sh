@@ -25,4 +25,9 @@ tok="ghp_$(printf 'A1b2C3%.0s' 1 2 3 4 5 6)"
 expect_exit 0 "$KV" set tok "$tok"
 grep -qF "tok${TAB}${tok}" "$KV_FILE" || fail "token-shaped value was changed"
 
+expect_exit 0 "$KV" set empty ""
+[ "$(cat "$KV_FILE" | grep -c '^empty'"$TAB"'$')" -eq 1 ] || fail "empty value not stored"
+expect_exit 2 "$KV" set k "a
+b"
+
 "$KV" help | grep -q '^set' || fail "help does not list set"
