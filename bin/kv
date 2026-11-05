@@ -9,7 +9,29 @@ usage() {
   echo "run 'kv help' for the commands" >&2
 }
 
+cmd_set() {
+  [ $# -eq 2 ] || { usage; exit 2; }
+  key=$1
+  value=$2
+  case $key in
+    '' | *[!A-Za-z0-9_.-]*) echo "kv: bad key" >&2; exit 2 ;;
+  esac
+  [ ${#key} -le 64 ] || { echo "kv: bad key" >&2; exit 2; }
+  tab=$(printf '\t')
+  nl=$(printf '\nx')
+  case $value in
+    *"$tab"* | *"${nl%x}"*) echo "kv: bad value" >&2; exit 2 ;;
+  esac
+  tmp=$(mktemp "$KV_FILE.XXXXXX") || exit 1
+  if [ -f "$KV_FILE" ]; then
+    KV_KEY=$key awk -F '\t' '$1 != ENVIRON["KV_KEY"]' "$KV_FILE" >"$tmp" || { rm -f "$tmp"; exit 1; }
+  fi
+  printf '%s\t%s\n' "$key" "$value" >>"$tmp" || { rm -f "$tmp"; exit 1; }
+  mv "$tmp" "$KV_FILE" || { rm -f "$tmp"; exit 1; }
+}
+
 cmd_help() {
+  echo "set     store a value under a key"
   echo "help    show this list"
 }
 
@@ -18,6 +40,7 @@ main() {
   cmd=$1
   shift
   case $cmd in
+    set) cmd_set "$@" ;;
     help) cmd_help "$@" ;;
     *) usage; exit 2 ;;
   esac
