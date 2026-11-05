@@ -23,13 +23,14 @@ cmd_set() {
   case $value in
     *"$tab"* | *"$nl"*) echo "kv: bad value" >&2; exit 2 ;;
   esac
-  dir=$(dirname -- "$KV_FILE")
-  tmp=$(mktemp "$dir/.kv.XXXXXX") || exit 1
+  dir=$(dirname "$KV_FILE")
+  tmp=$dir/.kv.$$
+  (umask 077; set -C; : >"$tmp") || exit 1
   if [ -f "$KV_FILE" ]; then
     K=$key awk -F'\t' '$1 != ENVIRON["K"]' "$KV_FILE" >"$tmp" || { rm -f "$tmp"; exit 1; }
   fi
   printf '%s\t%s\n' "$key" "$value" >>"$tmp" || { rm -f "$tmp"; exit 1; }
-  mv -- "$tmp" "$KV_FILE" || { rm -f "$tmp"; exit 1; }
+  mv "$tmp" "$KV_FILE" || { rm -f "$tmp"; exit 1; }
 }
 
 valid_key() {
