@@ -32,8 +32,32 @@ cmd_set() {
   mv -- "$tmp" "$KV_FILE" || { rm -f "$tmp"; exit 1; }
 }
 
+valid_key() {
+  case $1 in
+    *[!A-Za-z0-9_.-]*) return 1 ;;
+  esac
+  [ -n "$1" ] && [ "${#1}" -le 64 ]
+}
+
+cmd_get() {
+  [ $# -eq 1 ] || { usage; exit 2; }
+  valid_key "$1" || { echo "kv: bad key" >&2; exit 2; }
+  [ -f "$KV_FILE" ] || exit 1
+  tab=$(printf '\t')
+  found=1
+  while IFS= read -r line || [ -n "$line" ]; do
+    if [ "${line%%"$tab"*}" = "$1" ]; then
+      printf '%s\n' "${line#*"$tab"}"
+      found=0
+      break
+    fi
+  done <"$KV_FILE"
+  exit "$found"
+}
+
 cmd_help() {
   echo "set     store a value under a key"
+  echo "get     print the value of a key"
   echo "help    show this list"
 }
 
@@ -43,6 +67,7 @@ main() {
   shift
   case $cmd in
     set) cmd_set "$@" ;;
+    get) cmd_get "$@" ;;
     help) cmd_help "$@" ;;
     *) usage; exit 2 ;;
   esac
